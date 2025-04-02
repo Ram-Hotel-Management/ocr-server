@@ -1,0 +1,6 @@
+fastapi[standard]
+transformers==4.50.3
+pillow==11.2.0
+torch==2.6.0
+returns
+docling
