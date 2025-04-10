@@ -2,3 +2,4 @@ src/gemma-*/
 __pycache__
 *.log
 .DS_Store
+env/*

@@ -1,7 +1,6 @@
 import re
-import json
 
-class Invoice:
+class Invoice():
     def __init__(self, vendor: str, invoice_no: str,  acct_no: str, inv_date: str, due_date: str, total: str):
         self.invoice_no = invoice_no
         self.vendor = vendor
@@ -21,6 +20,13 @@ class Invoice:
 
 
     def to_json(self) -> dict:
-        return json.dumps(self.__dict__)
+        return {
+            "invoice_no": self.invoice_no,
+            "vendor": self.vendor,
+            "acct_no": self.acct_no,
+            "inv_date": self.inv_date,
+            "due_date": self.due_date,
+            "total": self.total
+        }
 
         

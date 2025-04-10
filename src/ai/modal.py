@@ -1,5 +1,4 @@
 from enum import Enum
-from returns.result import ResultE, Success
 from transformers import pipeline
 import torch
 from PIL.Image import Image
@@ -46,8 +45,8 @@ class Modal:
                     {"type": "text", "text": "Who is the vendor?"},
                     {"type": "text", "text": "What is the invoice number?"},
                     {"type": "text", "text": "What is the account number?"},
-                    {"type": "text", "text": "What is the date of the invoice?"},
-                    {"type": "text", "text": "What is the due date?"},
+                    {"type": "text", "text": "What is the date of the invoice in MM/DD/YYYY format?"},
+                    {"type": "text", "text": "What is the due date in MM/DD/YYYY format?"},
                     {"type": "text", "text": "What is the total amount?"}
                 ]
             }
