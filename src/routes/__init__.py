@@ -15,7 +15,7 @@ import json
 
 router = APIRouter()
 
-# docling_converter = DocumentConverter()
+docling_converter = DocumentConverter()
 
 @router.post("/ocr/doc")
 async def doc(file: Annotated[bytes, File()]):
