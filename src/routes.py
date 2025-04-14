@@ -3,24 +3,22 @@
 # - /ocr/invoice
 # - /ocr/chargeback
 from typing import Annotated
-from fastapi import APIRouter, File, UploadFile, HTTPException, Response
+from fastapi import APIRouter, File, HTTPException
 from docling.document_converter import DocumentConverter
 from docling.datamodel.base_models import DocumentStream
 from io import BytesIO
 from PIL import Image
-from ..invoice import Invoice
-from ..ai.modal import Modal, ModalName
+from .modal import Modal, ModalName
 
 import json
 
 router = APIRouter()
 
+# OCR on a doc
 docling_converter = DocumentConverter()
-
 @router.post("/ocr/doc")
 async def doc(file: Annotated[bytes, File()]):
     try:
-
         # file_type = None
         # if file.filename.endswith((".doc", ".docx")):
         #     file_type = "Word Document"
@@ -43,10 +41,8 @@ async def doc(file: Annotated[bytes, File()]):
         return HTTPException(500, json.dumps({"error": str(e)}))
 
 
-
+# Invoice parsing
 ai_modal = Modal(ModalName.GEMMA3_4B)
-
-
 #  Uses AI modal to retrieve trivial information from the image
 @router.post("/ocr/invoice")
 async def invoice(file: Annotated[bytes, File()]) :
@@ -61,4 +57,4 @@ async def invoice(file: Annotated[bytes, File()]) :
 # Chargeback route
 @router.get("/ocr/chargeback")
 def chargeback():
-    return {"response":"This route has not been built yet. Try again on later date."}
+    return {"error":"This route has not been built yet. Try again on later date."}

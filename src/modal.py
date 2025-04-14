@@ -1,9 +1,9 @@
 from enum import Enum
-from transformers import pipeline, AutoProcessor, AutoModelForImageTextToText
+from transformers import pipeline
 import torch
 from PIL.Image import Image
 from platform import system
-from invoice import Invoice
+from .invoice import Invoice
 
 def create_prompt(img: Image) -> list[dict[str, any]]:
     return [
@@ -37,10 +37,10 @@ def device() -> str:
 
 class ModalName(Enum):
     GEMMA3_4B = "./gemma-3-4b-it"
-    GEMMA3_12B = "./gemma-3-12b-it"
-    SMOLVLM = "HuggingFaceTB/SmolVLM2-2.2B-Instruct"
+    GEMMA3_12B = "google/gemma-3-12b-it"
+    # SMOLVLM = "HuggingFaceTB/SmolVLM2-2.2B-Instruct"
 
-class Gemma3:
+class Modal:
     def __init__(self,  name: ModalName):
         try:
             self.modal = pipeline(
@@ -50,7 +50,7 @@ class Gemma3:
                 torch_dtype=torch.bfloat16,
             )
         except Exception as e:
-            raise e.add_note("An error occurred while loading the modal")
+            raise e
        
     
     def invoice_info(self, img: Image) -> Invoice:
@@ -60,36 +60,36 @@ class Gemma3:
         return Invoice.from_gemma3(output)
 
 
-class SmolVLM2:
-    def __init__(self):
-        try:
-            model_path="HuggingFaceTB/SmolVLM2-2.2B-Instruct"
-            self.processor = AutoProcessor.from_pretrained(model_path)
-            self.model = AutoModelForImageTextToText.from_pretrained(
-                model_path,
-                torch_dtype=torch.bfloat16,
-                _attn_implementation="eager",
-            ).to(device())
+# class SmolVLM2:
+#     def __init__(self):
+#         try:
+#             model_path="HuggingFaceTB/SmolVLM2-2.2B-Instruct"
+#             self.processor = AutoProcessor.from_pretrained(model_path)
+#             self.model = AutoModelForImageTextToText.from_pretrained(
+#                 model_path,
+#                 torch_dtype=torch.bfloat16,
+#                 _attn_implementation="eager",
+#             ).to(device())
 
-        except Exception as e:
-            raise e.add_note("An error occurred while loading the modal")
+#         except Exception as e:
+#             raise e.add_note("An error occurred while loading the modal")
         
 
-    def invoice_info(self, img: Image) -> Invoice:
-        messages = create_prompt(img=img)
-        inputs = self.processor.apply_chat_template(
-            messages,
-            add_generation_prompt=True,
-            tokenize=True,
-            return_dict=True,
-            return_tensors="pt",
-        ).to(self.model.device, dtype=torch.bfloat16)
+#     def invoice_info(self, img: Image) -> Invoice:
+#         messages = create_prompt(img=img)
+#         inputs = self.processor.apply_chat_template(
+#             messages,
+#             add_generation_prompt=True,
+#             tokenize=True,
+#             return_dict=True,
+#             return_tensors="pt",
+#         ).to(self.model.device, dtype=torch.bfloat16)
 
-        generated_ids = self.model.generate(**inputs, do_sample=False, max_new_tokens=512)
-        generated_texts = self.processor.batch_decode(
-            generated_ids,
-            skip_special_tokens=True,
-        )
+#         generated_ids = self.model.generate(**inputs, do_sample=False, max_new_tokens=512)
+#         generated_texts = self.processor.batch_decode(
+#             generated_ids,
+#             skip_special_tokens=True,
+#         )
 
-        print(generated_texts[0])
+#         print(generated_texts[0])
     
