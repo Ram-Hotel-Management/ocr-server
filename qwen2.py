@@ -1,6 +1,7 @@
 from transformers import Qwen2_5_VLForConditionalGeneration, AutoTokenizer, AutoProcessor
 from qwen_vl_utils import process_vision_info
 from PIL import Image
+import json
 # default: Load the model on the available device(s)
 model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
     "Qwen/Qwen2.5-VL-7B-Instruct", torch_dtype="auto", device_map="auto"
@@ -40,38 +41,6 @@ messages = [
                     {"type": "text", "text": "What is the total amount?"}
         ]
     },
-    # {
-    #     "role": "user",
-    #     "content": [
-    #         {"type": "image", "image": img},
-    #         {"type": "text", "text": "What is the account or customer number?"},
-            
-    #     ]
-    # },
-    # {
-    #     "role": "user",
-    #     "content": [
-    #         {"type": "image", "image": img},
-    #         {"type": "text", "text": "What is the date of the invoice in MM/DD/YYYY format?"},
-            
-    #     ]
-    # },
-    # {
-    #     "role": "user",
-    #     "content": [
-    #         {"type": "image", "image": img},
-    #         {"type": "text", "text": "What is the due date in MM/DD/YYYY format?"},
-            
-    #     ]
-    # },
-    # {
-    #     "role": "user",
-    #     "content": [
-    #         {"type": "image", "image": img},
-    #         {"type": "text", "text": "What is the total amount?"}
-            
-    #     ]
-    # },
 ]
 
 
@@ -95,11 +64,22 @@ inputs = processor(
 inputs = inputs.to("mps")
 
 # Inference: Generation of the output
-generated_ids = model.generate(**inputs, max_new_tokens=256)
+generated_ids = model.generate(**inputs, max_new_tokens=512)
 generated_ids_trimmed = [
     out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
 ]
 output_text = processor.batch_decode(
     generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
 )
-print(output_text[0].split("\n"))
+
+json_string = output_text[0]
+
+json_string = json_string.strip("[]'")
+json_string = json_string.replace("```json\n", "").replace("\n```", "")
+json_string = json_string.replace("'", "")
+
+try:
+    formatted_json = json.loads(json_string)
+    print(json.dumps(formatted_json))
+except json.JSONDecodeError as e:
+    print("Failed to parse JSON:", e)
