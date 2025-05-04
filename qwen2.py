@@ -33,13 +33,13 @@ model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
 # )
 
 # default processer
-processor = AutoProcessor.from_pretrained(model_id)
+# processor = AutoProcessor.from_pretrained(model_id)
 
 # The default range for the number of visual tokens per image in the model is 4-16384.
 # You can set min_pixels and max_pixels according to your needs, such as a token range of 256-1280, to balance performance and cost.
-# min_pixels = 256*28*28
-# max_pixels = 1280*28*28
-# processor = AutoProcessor.from_pretrained("Qwen/Qwen2.5-VL-3B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels)
+min_pixels = 256*28*28
+max_pixels = 1280*28*28
+processor = AutoProcessor.from_pretrained(model_id, min_pixels=min_pixels, max_pixels=max_pixels)
 img =Image.open("./5.png")
 messages = [
     {
