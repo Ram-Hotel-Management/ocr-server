@@ -1,0 +1,4 @@
+git+https://github.com/huggingface/transformers
+accelerate
+qwen-vl-utils
+torchvision
